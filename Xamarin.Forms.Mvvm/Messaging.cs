@@ -7,7 +7,7 @@ namespace Xamarin.Forms.Mvvm
     public class Messaging
     {
         #region Singleton
-        private Messaging() {  }
+        private Messaging() { }
         private static Lazy<Messaging> _instance = new Lazy<Messaging>(() => new Messaging());
         public static Messaging Instance => _instance.Value;
         #endregion
@@ -20,7 +20,7 @@ namespace Xamarin.Forms.Mvvm
             List<Subscription> subs = GetSubscriptions(channelKey);
             subs.RemoveAll(s => s.SusbcriberKey == subscriberKey);
             subs.Add(new Subscription(subscriberKey, response));
-            Channels[channelKey] = subs; 
+            Channels[channelKey] = subs;
         }
 
         public void Subscribe<T>(string channel, string subscriberKey, Action<T> response)
@@ -50,7 +50,7 @@ namespace Xamarin.Forms.Mvvm
         {
             var channelKey = new ChannelKey(channel, null);
             List<Subscription> subs = GetSubscriptions(channelKey);
-            foreach(var sub in subs)
+            foreach (var sub in subs)
             {
                 if (sub.Reponse.IsAlive)
                 {

@@ -18,15 +18,19 @@ namespace Xamarin.Forms.Mvvm
 
             Page mainPage = null;
             Task.Run(async () => mainPage = await CreateMainPage()).Wait();
-            
-            MainPage = UseRootNavigationPage ? new NavigationPage(mainPage) : mainPage;
+
+            MainPage = mainPage;
         }
 
         protected abstract void InitializeContainer();
-        protected abstract bool UseRootNavigationPage { get; }
         protected abstract Task<Page> CreateMainPage();
 
-        public async Task<Page> CreatePage<TPage, TViewModel>(Dictionary<string, object> navigationParams = null)
+        public Task<Page> CreatePage<TPage, TViewModel>(Dictionary<string, object> navigationParams = null)
+            where TPage : ContentPageBase
+            where TViewModel : ViewModelBase
+            => CreatePage<TPage, TViewModel>(false, navigationParams);
+
+        public async Task<Page> CreatePage<TPage, TViewModel>(bool wrapInNavigationPage, Dictionary<string, object> navigationParams = null)
             where TPage : ContentPageBase
             where TViewModel : ViewModelBase
         {
@@ -38,6 +42,11 @@ namespace Xamarin.Forms.Mvvm
 
             page.BindingContext = vm;
             page.Initialize();
+
+            if (wrapInNavigationPage)
+            {
+                return new NavigationPage(page);
+            }
 
             return page;
         }
@@ -53,7 +62,7 @@ namespace Xamarin.Forms.Mvvm
             (masterPage.BindingContext as ViewModelBase)?.SetWeakMasterDetailpage(masterDetailPage);
 
             Page detailPage = await masterDetailPage.CreateDetailPage();
-            masterDetailPage.Detail = masterDetailPage.UseDetailNavigationPage ? new NavigationPage(detailPage) : detailPage;
+            masterDetailPage.Detail = detailPage;
             (detailPage.BindingContext as ViewModelBase)?.SetWeakMasterDetailpage(masterDetailPage);
 
             return masterDetailPage;
